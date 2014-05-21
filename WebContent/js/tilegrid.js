@@ -2,91 +2,81 @@ var TileGridException = function(message) {
    this.message = message;
    this.name = "TileGridException";
 };
+var Tile = function(r,c,tileGrid){
+	
+	//If i create it like this, the methods keep the constructor values and I don't have to use this everywhere!!!
+	
+	this.value = null;
+	this.above = function(){
+		return tileGrid.getTile(r-1,c);
+	};
+	this.below = function(){
+		return tileGrid.getTile(r+1,c);
+	};
+	this.left = function(){
+		return tileGrid.getTile(r,c-1);
+	};
+	this.right = function(){
+		return tileGrid.getTile(r,c+1);
+	};
+	this.getValue = function(){
+		return this.value;
+	};
+	this.setValue = function(value){
+		this.value = value;
+	};
+	this.isAbove = function(row){
+		return r < row;
+	};
+	this.isLeft = function(col){
+		return c < col;
+	};
+	this.swapValues = function(otherTile) {
+		var temp = otherTile.getValue();
+		otherTile.setValue(this.value);
+		this.setValue(temp);
+	};
+	this.select = function() {
+		console.log('select',this.name);
+		tileGrid.selectCell(r, c);
+	};
+	this.isSameRow = function(row){
+		return r == row;
+	};
+	this.isSameColumn = function(col){
+		return c == col;
+	};
+};
+
+// 0,0 is top,left of grid!
+// 2,5 is the 2nd row, 5th column
+
 var TileGrid = function(num_rows, num_cols, getInitial) {
+	
+	var that = this;
 	console.log(num_rows, num_cols, getInitial);	
 	this.num_rows = num_rows;
 	this.num_cols = num_cols;
-	var that = this;
 	this.rows = new Array(num_rows);
-	for ( var r = 0; r < num_rows; r++) {
-		var row = new Array(num_cols);
-		for ( var c = 0; c < num_cols; c++) {
-			var initial = getInitial(r, c);
-			var tile = {
-				r : r,
-				c : c,
-				value : initial,
-				select : function() {					
-					console.log('select',this.name);
-					that.selectCell(this.r, this.c);
-				}
-			};
-			row[c] = tile;
-			console.log('tile value',tile.value);
-		}
-		;
-		console.log('empty row is', row);
-		this.rows[r] = row;
-	}// for loop
 
-
-	// 0,0 is top,left of grid!
-	// 2,5 is the 2nd row, 5th column
-
-	this.hole = {
-			r:2,
-			c:2,
-			above : function(){
-				return {r:this.r-1, c:this.c };
-			},
-			below : function(){
-				return {r:this.r+1, c:this.c };
-			},
-			left : function(){
-				return {r:this.r, c:this.c-1 };
-			},
-			right : function(){
-				return {r:this.r, c:this.c+1 };
-			},
-			tile : function(){
-				return that.rows[this.r][this.c];
-			},
-			update : function(r,c){
-				this.r = r;
-				this.c = c;
-			}
+	this.getTile = function(r,c){
+		return this.rows[r][c];
 	};
-	
-	this.hole.tile().value ='';
-
-	console.log('hole',this.hole);
-	console.log('hole : above',this.hole.above());
-	console.log('hole : below',this.hole.below());
-	console.log('hole : left',this.hole.left());
-	console.log('hole : right',this.hole.right());
-	
-	this.swap = function(coords){
-		console.log('swap with r=['+coords.r+']c=['+coords.c+']');		
-		var other = this.rows[coords.r][coords.c];
-		this.hole.tile().value = other.value;
-		other.value = null;
-		this.hole.update(coords.r,coords.c);		
+	this.moveHole = function(tile){
+		this.hole.swapValues(tile);
+		this.hole = tile;
 	};
 	this.moveHoleUp = function(){
-		 console.log('moveHoleUp');
-		 this.swap(this.hole.above());
+		 this.moveHole(this.hole.above());
 	};
 	this.moveHoleDown = function(){
-		console.log('moveHoleDown');
-		this.swap(this.hole.below());
+		this.moveHole(this.hole.below());
 	};
 	this.moveHoleLeft = function(){
-		console.log('moveHoleLeft');
-		this.swap(this.hole.left());
+		 this.moveHole(this.hole.left());
 	};
 	this.moveHoleRight = function(){
-		console.log('moveHoleRight');
-		this.swap(this.hole.right());
+		 this.moveHole(this.hole.right());
 	};
 	this.reverse = function(move){
 		switch(move){
@@ -101,16 +91,14 @@ var TileGrid = function(num_rows, num_cols, getInitial) {
 	this.selectCell = function(r, c) {
 		console.log('selectCell',r,c);
 		var slideVertical = function() {
-			console.log('slideVertical');
 			do {
-				r < that.hole.r ? that.moveHoleUp() : that.moveHoleDown();
-			} while (that.hole.r != r);
+				that.hole.isAbove(r) ? that.moveHoleDown() : that.moveHoleUp();
+			} while (!that.hole.isSameRow(r));
 		};
 		var slideHorizontal = function() {
-			console.log('slideHorizontal');
 			do {
-				c < that.hole.c ? that.moveHoleLeft() : that.moveHoleRight();
-			} while (that.hole.c != c );
+				that.hole.isLeft(c) ? that.moveHoleRight() : that.moveHoleLeft();
+			} while (!that.hole.isSameColumn(c));
 		};
 		if (r < 0 || r >= that.num_rows) {
 			return;
@@ -122,14 +110,27 @@ var TileGrid = function(num_rows, num_cols, getInitial) {
 			return;
 		}
 
-		if (r == that.hole.r) {
-			console.log('selected cell is on same row as hole');
+		if (that.hole.isSameRow(r)) {
 			slideHorizontal();
-		} else if (c == that.hole.c) {
-			console.log('selected cell is on same column as hole');
+		} else if (that.hole.isSameColumn(c)) {
 			slideVertical();
 		}
 
 	};
+
+	for ( var r = 0; r < num_rows; r++) {
+		var row = new Array(num_cols);
+		for ( var c = 0; c < num_cols; c++) {
+			var initial = getInitial(r, c);
+			var tile = new Tile(r,c,this);
+			tile.setValue(initial);
+			row[c] = tile;
+			console.log('tile value',tile.value);
+		};
+		this.rows[r] = row;
+	}// for loop
+	
+	this.hole = this.getTile(2,2);
+	this.hole.setValue('');
 
 };
