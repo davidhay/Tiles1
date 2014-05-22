@@ -1,1 +1,1 @@
-var app = angular.module('tilesApp', []);
+var app = angular.module('tilesApp', ['ngSanitize']);

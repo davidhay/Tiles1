@@ -1,22 +1,21 @@
 <html ng-app="tilesApp">
 <head>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-route.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-sanitize.min.js"></script>
 <script type="text/javascript" src="js/app.js"></script>
 <script type="text/javascript" src="js/tilegrid.js"></script>
 <script type="text/javascript" src="js/controllers/tiles.js"></script>
 <script type="text/javascript" src="js/directives/tiles.js"></script>
 <script type="text/javascript" src="js/directives/tile.js"></script>
+<script type="text/javascript" src="js/directives/image.js"></script>
 <style type="text/css">
-table,td {
-	border: 1px solid black;
-}
 table {
 	border-collapse: collapse;
 }
 </style>
 </head>
 <body>
-Hello
-<tiles ng-controller="TilesController" />
+<tiles ng-controller="TilesController"></tiles>
 </body>
 </html>

@@ -59,7 +59,7 @@ var Tile = function(r,c,tileGrid){
 
 var TileGrid = function(num_rows, num_cols, getInitial) {
 	
-	var moves = [];
+	var moves = [];//private state
 	var that = this;
 	console.log(num_rows, num_cols, getInitial);	
 	
@@ -170,7 +170,7 @@ var TileGrid = function(num_rows, num_cols, getInitial) {
 		this.rows[r] = row;
 	}// for loop
 	
-	this.hole = this.getTile(2,2);
+	this.hole = this.getTile(0,0);
 	this.hole.setValue('');
 
 };

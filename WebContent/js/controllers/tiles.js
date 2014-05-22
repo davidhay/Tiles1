@@ -1,9 +1,12 @@
-angular.module('tilesApp').controller('TilesController', function($scope,$timeout) {
+angular.module('tilesApp').controller('TilesController', function($scope,$timeout,$sce) {
 
 	var initialContents = function(r, c) {
-		return '(' + r + ',' + c + ')';
+	    return {
+	    	row : r,
+	    	col : c
+	    }
 	};
-	var tg = new TileGrid(5, 4, initialContents);
+	var tg = new TileGrid(3, 3, initialContents);
 	$scope.rows = tg.rows;
 	
 	$scope.resetting = false;
