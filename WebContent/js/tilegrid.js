@@ -46,6 +46,12 @@ var Tile = function(r,c,tileGrid){
 	this.isSameColumn = function(col){
 		return c == col;
 	};
+	this.rowsAboveThis = function(row){
+		return r - row;
+	};
+	this.colsLeftThis = function(col){
+		return c - col;
+	};
 };
 
 // 0,0 is top,left of grid!
@@ -53,10 +59,10 @@ var Tile = function(r,c,tileGrid){
 
 var TileGrid = function(num_rows, num_cols, getInitial) {
 	
+	var moves = [];
 	var that = this;
 	console.log(num_rows, num_cols, getInitial);	
-	this.num_rows = num_rows;
-	this.num_cols = num_cols;
+	
 	this.rows = new Array(num_rows);
 
 	this.getTile = function(r,c){
@@ -66,39 +72,73 @@ var TileGrid = function(num_rows, num_cols, getInitial) {
 		this.hole.swapValues(tile);
 		this.hole = tile;
 	};
-	this.moveHoleUp = function(){
+	var moveHoleUp = function(){
 		 this.moveHole(this.hole.above());
 	};
-	this.moveHoleDown = function(){
+	var  moveHoleDown = function(){
 		this.moveHole(this.hole.below());
 	};
-	this.moveHoleLeft = function(){
+	var moveHoleLeft = function(){
 		 this.moveHole(this.hole.left());
 	};
-	this.moveHoleRight = function(){
+	var moveHoleRight = function(){
 		 this.moveHole(this.hole.right());
 	};
-	this.reverse = function(move){
-		switch(move){
-			case this.moveHoleUp    : return this.moveHoleDown(); break;
-			case this.moveHoleDown  : return this.moveHoleUp(); break;
-			case this.moveHoleLeft  : return this.moveHoleRight(); break;
-			case this.moveHoleRight : return this.moveHoleLeft(); break;
-			default  : throw new TileGridException("problem trying to get reverse for "+move);
-		}
+	this.addMove = function(move){
+		moves.push(move);
 	};
 	
+	this.goBackOneMove = function() {
+		var reverse = function(move) {
+			console.log('reverse : move is ',move);
+			var result;
+			if (move === moveHoleUp) {
+				result = moveHoleDown;
+				
+			} else if (move === moveHoleDown) {
+				result = moveHoleUp;
+				
+			} else if (move === moveHoleLeft) {
+				result = moveHoleRight;
+				
+			} else if (move === moveHoleRight) {
+				result = moveHoleLeft;
+				
+			} else {
+				throw new TileGridException("problem trying to get reverse for " + move);
+			}
+			return result;
+		};
+		if (moves.length > 0) {
+			var move = moves.pop();
+			var opp = reverse(move);
+			opp.apply(this);
+		};
+	};
+	this.getMoveCount = function(){
+		return moves.length;
+	};
 	this.selectCell = function(r, c) {
-		console.log('selectCell',r,c);
+		console.log('selectCell', r, c);
 		var slideVertical = function() {
-			do {
-				that.hole.isAbove(r) ? that.moveHoleDown() : that.moveHoleUp();
-			} while (!that.hole.isSameRow(r));
+			var rowsAbove = that.hole.rowsAboveThis(r);
+			console.log('rows above',rowsAbove);
+			var fn = (rowsAbove > 0) ? moveHoleUp : moveHoleDown;
+			var moves = Math.floor(Math.abs(rowsAbove));
+			for(var i=0;i<moves;i++){				
+				fn.call(that);
+				that.addMove(fn);
+			};
 		};
 		var slideHorizontal = function() {
-			do {
-				that.hole.isLeft(c) ? that.moveHoleRight() : that.moveHoleLeft();
-			} while (!that.hole.isSameColumn(c));
+			var colsLeft = that.hole.colsLeftThis(c);
+			console.log('cols left',colsLeft);
+			var fn = (colsLeft > 0) ? moveHoleLeft : moveHoleRight;
+			var moves = Math.floor(Math.abs(colsLeft));			
+			for(var i=0;i<moves;i++){
+				fn.call(that);
+				that.addMove(fn);				
+			};
 		};
 		if (r < 0 || r >= that.num_rows) {
 			return;
@@ -109,12 +149,12 @@ var TileGrid = function(num_rows, num_cols, getInitial) {
 		if (c == that.hole.c && r == that.hole.r) {
 			return;
 		}
-
+		
 		if (that.hole.isSameRow(r)) {
 			slideHorizontal();
 		} else if (that.hole.isSameColumn(c)) {
 			slideVertical();
-		}
+		};
 
 	};
 
