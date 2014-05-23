@@ -12,7 +12,9 @@
 <script type="text/javascript" src="js/appInit.js"></script>
 
 <script type="text/javascript" src="js/controllers/tiles.js"></script>
+<script type="text/javascript" src="js/controllers/tilesSupport.js"></script>
 
+<script type="text/javascript" src="js/directives/tilesSupport.js"></script>
 <script type="text/javascript" src="js/directives/tiles.js"></script>
 <script type="text/javascript" src="js/directives/tile.js"></script>
 <script type="text/javascript" src="js/directives/image.js"></script>
@@ -24,6 +26,8 @@ table {
 </style>
 </head>
 <body>
-<tiles ng-controller="TilesController"></tiles>
+	<div tiles-support >	
+		<tiles></tiles>
+	</div>	
 </body>
 </html>

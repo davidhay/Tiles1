@@ -1,5 +1,7 @@
 angular.module('tilesApp').controller('TilesController', function($scope,$timeout,$sce,tilesConfig) {
 
+	this.name = 'TilesController';
+	
 	var initialContents = function(r, c) {
 	    return {
 	    	row : r,

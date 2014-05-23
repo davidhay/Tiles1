@@ -4,7 +4,8 @@ angular.module('tilesApp').directive('tiles', function() {
       // attributes only
       restrict: 'E',
       transclude: false,
-      templateUrl: 'tiles.html',      
+      templateUrl: 'tiles.html',
+      controller: 'TilesController',
       scope: true,
       link: function(scope, element, attrs, controller) {
     	  
