@@ -1,34 +1,35 @@
 var TileGridException = function(message) {
-   this.message = message;
-   this.name = "TileGridException";
+	this.message = message;
+	this.name = "TileGridException";
 };
-var Tile = function(r,c,tileGrid){
-	
-	//If i create it like this, the methods keep the constructor values and I don't have to use this everywhere!!!
-	
+var Tile = function(r, c, tileGrid) {
+
+	// If i create it like this, the methods keep the constructor values and I
+	// don't have to use this everywhere!!!
+
 	this.value = null;
-	this.above = function(){
-		return tileGrid.getTile(r-1,c);
+	this.above = function() {
+		return tileGrid.getTile(r - 1, c);
 	};
-	this.below = function(){
-		return tileGrid.getTile(r+1,c);
+	this.below = function() {
+		return tileGrid.getTile(r + 1, c);
 	};
-	this.left = function(){
-		return tileGrid.getTile(r,c-1);
+	this.left = function() {
+		return tileGrid.getTile(r, c - 1);
 	};
-	this.right = function(){
-		return tileGrid.getTile(r,c+1);
+	this.right = function() {
+		return tileGrid.getTile(r, c + 1);
 	};
-	this.getValue = function(){
+	this.getValue = function() {
 		return this.value;
 	};
-	this.setValue = function(value){
+	this.setValue = function(value) {
 		this.value = value;
 	};
-	this.isAbove = function(row){
+	this.isAbove = function(row) {
 		return r < row;
 	};
-	this.isLeft = function(col){
+	this.isLeft = function(col) {
 		return c < col;
 	};
 	this.swapValues = function(otherTile) {
@@ -37,20 +38,26 @@ var Tile = function(r,c,tileGrid){
 		this.setValue(temp);
 	};
 	this.select = function() {
-		console.log('select',this.name);
+		// console.log('select',this.name);
 		tileGrid.selectCell(r, c);
 	};
-	this.isSameRow = function(row){
+	this.isSameRow = function(row) {
 		return r == row;
 	};
-	this.isSameColumn = function(col){
+	this.isSameColumn = function(col) {
 		return c == col;
 	};
-	this.rowsAboveThis = function(row){
+	this.rowsAboveThis = function(row) {
 		return r - row;
 	};
-	this.colsLeftThis = function(col){
+	this.colsLeftThis = function(col) {
 		return c - col;
+	};
+	this.position = function() {
+		return {
+			row : r,
+			col : c
+		};
 	};
 };
 
@@ -58,54 +65,55 @@ var Tile = function(r,c,tileGrid){
 // 2,5 is the 2nd row, 5th column
 
 var TileGrid = function(num_rows, num_cols, getInitial) {
-	
-	var moves = [];//private state
+
+	var moves = [];// private state
 	var that = this;
-	console.log(num_rows, num_cols, getInitial);	
-	
+	// console.log(num_rows, num_cols, getInitial);
+
 	this.rows = new Array(num_rows);
 
-	this.getTile = function(r,c){
+	this.getTile = function(r, c) {
 		return this.rows[r][c];
 	};
-	this.moveHole = function(tile){
+	this.moveHole = function(tile) {
 		this.hole.swapValues(tile);
 		this.hole = tile;
 	};
-	var moveHoleUp = function(){
-		 this.moveHole(this.hole.above());
+	var moveHoleUp = function() {
+		this.moveHole(this.hole.above());
 	};
-	var  moveHoleDown = function(){
+	var moveHoleDown = function() {
 		this.moveHole(this.hole.below());
 	};
-	var moveHoleLeft = function(){
-		 this.moveHole(this.hole.left());
+	var moveHoleLeft = function() {
+		this.moveHole(this.hole.left());
 	};
-	var moveHoleRight = function(){
-		 this.moveHole(this.hole.right());
+	var moveHoleRight = function() {
+		this.moveHole(this.hole.right());
 	};
-	this.addMove = function(move){
+	this.addMove = function(move) {
 		moves.push(move);
 	};
-	
+
 	this.goBackOneMove = function() {
 		var reverse = function(move) {
-			console.log('reverse : move is ',move);
+			// console.log('reverse : move is ',move);
 			var result;
 			if (move === moveHoleUp) {
 				result = moveHoleDown;
-				
+
 			} else if (move === moveHoleDown) {
 				result = moveHoleUp;
-				
+
 			} else if (move === moveHoleLeft) {
 				result = moveHoleRight;
-				
+
 			} else if (move === moveHoleRight) {
 				result = moveHoleLeft;
-				
+
 			} else {
-				throw new TileGridException("problem trying to get reverse for " + move);
+				throw new TileGridException(
+						"problem trying to get reverse for " + move);
 			}
 			return result;
 		};
@@ -113,32 +121,35 @@ var TileGrid = function(num_rows, num_cols, getInitial) {
 			var move = moves.pop();
 			var opp = reverse(move);
 			opp.apply(this);
-		};
+		}
+		;
 	};
-	this.getMoveCount = function(){
+	this.getMoveCount = function() {
 		return moves.length;
 	};
 	this.selectCell = function(r, c) {
-		console.log('selectCell', r, c);
+		// console.log('selectCell', r, c);
 		var slideVertical = function() {
 			var rowsAbove = that.hole.rowsAboveThis(r);
-			console.log('rows above',rowsAbove);
+			// console.log('rows above',rowsAbove);
 			var fn = (rowsAbove > 0) ? moveHoleUp : moveHoleDown;
 			var moves = Math.floor(Math.abs(rowsAbove));
-			for(var i=0;i<moves;i++){				
+			for ( var i = 0; i < moves; i++) {
 				fn.call(that);
 				that.addMove(fn);
-			};
+			}
+			;
 		};
 		var slideHorizontal = function() {
 			var colsLeft = that.hole.colsLeftThis(c);
-			console.log('cols left',colsLeft);
+			// console.log('cols left',colsLeft);
 			var fn = (colsLeft > 0) ? moveHoleLeft : moveHoleRight;
-			var moves = Math.floor(Math.abs(colsLeft));			
-			for(var i=0;i<moves;i++){
+			var moves = Math.floor(Math.abs(colsLeft));
+			for ( var i = 0; i < moves; i++) {
 				fn.call(that);
-				that.addMove(fn);				
-			};
+				that.addMove(fn);
+			}
+			;
 		};
 		if (r < 0 || r >= that.num_rows) {
 			return;
@@ -149,12 +160,13 @@ var TileGrid = function(num_rows, num_cols, getInitial) {
 		if (c == that.hole.c && r == that.hole.r) {
 			return;
 		}
-		
+
 		if (that.hole.isSameRow(r)) {
 			slideHorizontal();
 		} else if (that.hole.isSameColumn(c)) {
 			slideVertical();
-		};
+		}
+		;
 
 	};
 
@@ -162,15 +174,64 @@ var TileGrid = function(num_rows, num_cols, getInitial) {
 		var row = new Array(num_cols);
 		for ( var c = 0; c < num_cols; c++) {
 			var initial = getInitial(r, c);
-			var tile = new Tile(r,c,this);
+			var tile = new Tile(r, c, this);
 			tile.setValue(initial);
 			row[c] = tile;
-			console.log('tile value',tile.value);
-		};
+			// console.log('tile value',tile.value);
+		}
+		;
 		this.rows[r] = row;
 	}// for loop
-	
-	this.hole = this.getTile(0,0);
+
+	this.hole = this.getTile(0, 0);
 	this.hole.setValue('');
 
+	this.randomMove = function() {
+
+		console.log('in random move!');
+
+		function randomBoolean() {
+			return Math.random() < .5;
+		}
+		;
+		function randomInt(min, max) {
+			var result = Math.floor(Math.random() * (max - min + 1)) + min;
+			return result;
+		}
+		function getRandomExcluding(max, excluding) {
+			var count = 0;
+			var result = null;
+			do {
+				console.log('looping....');
+				var temp = randomInt(0, max - 1);
+				if (temp != excluding) {
+					result = temp;
+				}
+				count++;
+			} while (count < 100 && result == null);
+			return result;
+		}
+
+		var pos = that.hole.position();
+		console.log('hole position is', pos);
+		var random = {};
+		
+		var vertical = randomBoolean();
+		console.log('vertical',vertical);
+		if (vertical) {
+			random.row = getRandomExcluding(num_rows, pos.row);
+			console.log('random row',random.row);
+			random.col = pos.col;
+		} else {
+			random.row = pos.row;
+			random.col = getRandomExcluding(num_cols, pos.col);
+			console.log('random col',random.col);
+		}
+		console.log('random tile is', random);
+		
+		var tile = that.rows[random.row][random.col];
+		console.log('tile is', tile);
+		tile.select();
+		
+	};
 };

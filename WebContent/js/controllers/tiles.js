@@ -12,6 +12,8 @@ angular.module('tilesApp').controller('TilesController', function($scope,$timeou
 	$scope.rows = tg.rows;
 	
 	$scope.resetting = false;
+	$scope.randomizing = false;
+	
 	$scope.reset = function() {
 		if ($scope.resetting) {
 			console.log('already resetting!');
@@ -29,6 +31,25 @@ angular.module('tilesApp').controller('TilesController', function($scope,$timeou
 			}
 		};
 		resetInternal();
+	};
+	
+	$scope.randomize = function(target) {
+		if ($scope.randomizing) {
+			console.log('already randomizing!');
+			return;
+		}
+		$scope.randomizing = true;
+		function randomizeInternal(target){
+			if(target == 0){
+				$scope.randomizing = false;
+				return;
+			}
+			tg.randomMove();
+			$timeout(function(){
+				randomizeInternal(target-1);
+			},100);
+		};
+		randomizeInternal(target);
 	};
 
 });

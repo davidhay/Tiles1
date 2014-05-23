@@ -9,7 +9,7 @@ angular.module('tilesApp').directive('tile', function() {
       link: function(scope, element, attrs) {
     	  console.log('model is',scope.model);
     	  scope.select = function(){
-    		  console.log('click event being processed!', new Date());
+    		  //console.log('click event being processed!', new Date());
     		  scope.model.select();
     	  };
       }

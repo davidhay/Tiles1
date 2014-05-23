@@ -1,9 +1,11 @@
 <table>
 	<tr ng-repeat="row in rows" ng-init="$r=$index">
 		<td ng-repeat="col in row" ng-init="$c=$index">		
-		<tile model="rows[$r][$c]"></tile>
+			<tile model="rows[$r][$c]"></tile>
 		</td>
 	</tr>
 </table>
 
 <a href="" ng-click="reset()" >Reset!</a>
+<a href="" ng-click="randomize(1)" >Random 1</a>
+<a href="" ng-click="randomize(100)" >Random 100</a>

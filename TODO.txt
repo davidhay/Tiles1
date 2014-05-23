@@ -1,0 +1,24 @@
+Remove console.log messages.
+Randomize where hole goes.
+Auto-Solve.
+user image, rows, columns.
+cursor keys.
+when moving more than 1, do them individually.
+Refactor!
+Testing.
+It should still work without tiles-support directive. It should then just use text.
+I could put a watch in manually - and then update the class name [[This would be a good lesson on doing watching via code]]
+if I use custom events to represent the moves. I can broadcast the move_R_C(left|right|up|down)
+	if clicked on, we ask all neigbours to move.
+		for(each neighbour in U,D,L,R)
+			from gridController. broadcast(moveRequest,this tile);
+	on(moveRequest,other Tile)
+		if(this is the hole)
+			return yes
+		else
+			if other tile is left and tile to right 				
+					broadcast(moveRequest, this tile) 
+			if other tile is right and tile to left
+					broadbast(moveRequest, tile
+	
+	
